@@ -1,0 +1,73 @@
+diff -cr userinterface/properties/GUIPropertyEditor.java userinterface1/properties/GUIPropertyEditor.java
+*** userinterface/properties/GUIPropertyEditor.java	2012-01-28 04:47:13.000000000 +0530
+--- userinterface1/properties/GUIPropertyEditor.java	2016-03-07 00:25:51.293374000 +0530
+***************
+*** 365,370 ****
+--- 365,375 ----
+  			addString("S><p [ () ]", CURSOR, 1);
+  			propertyText.select(curs+1, curs+4);
+  		}
++ 		else if(e.getSource() == alwaysButton)
++ 		{	int curs = propertyText.getCaretPosition();
++ 			addString("P>=<=p [ G () ]", CURSOR, 1);
++ 			propertyText.select(curs+1, curs+6);	
++ 		}
+  		else if(e.getSource() == cut)
+  		{
+  			if(propertyText.getSelectedText() != null)
+***************
+*** 476,481 ****
+--- 481,487 ----
+  		boundedUntilButton.addActionListener(this);
+  		untilButton.addActionListener(this);
+  		steadyStateButton.addActionListener(this);
++ 		alwaysButton.addActionListener(this);
+  		propertyText.addKeyListener(this);
+  		this.addKeyListener(this);
+  		
+***************
+*** 515,520 ****
+--- 521,527 ----
+          notButton = new javax.swing.JButton();
+          untilButton = new javax.swing.JButton();
+          steadyStateButton = new javax.swing.JButton();
++         alwaysButton = new javax.swing.JButton();
+          falseButton = new javax.swing.JButton();
+          orButton = new javax.swing.JButton();
+          nextButton = new javax.swing.JButton();
+***************
+*** 704,710 ****
+          gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+          gridBagConstraints.weightx = 0.2;
+          jPanel7.add(boundedUntilButton, gridBagConstraints);
+! 
+          jPanel7.add(jPanel11, new java.awt.GridBagConstraints());
+  
+          gridBagConstraints = new java.awt.GridBagConstraints();
+--- 711,726 ----
+          gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+          gridBagConstraints.weightx = 0.2;
+          jPanel7.add(boundedUntilButton, gridBagConstraints);
+!         
+!         alwaysButton.setText("Always");
+!         gridBagConstraints = new java.awt.GridBagConstraints();
+!         gridBagConstraints.gridx = 11;
+!         gridBagConstraints.gridy = 5;
+!         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+!         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+!         gridBagConstraints.weightx = 0.2;
+!         jPanel7.add(alwaysButton, gridBagConstraints);
+!         
+          jPanel7.add(jPanel11, new java.awt.GridBagConstraints());
+  
+          gridBagConstraints = new java.awt.GridBagConstraints();
+***************
+*** 905,910 ****
+--- 921,927 ----
+      private javax.swing.JButton steadyStateButton;
+      private javax.swing.JButton trueButton;
+      private javax.swing.JButton untilButton;
++     private javax.swing.JButton alwaysButton;
+      // End of variables declaration//GEN-END:variables
+  	
+  }

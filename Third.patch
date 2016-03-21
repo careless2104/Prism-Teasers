@@ -1,0 +1,507 @@
+diff -cr userinterface/GUIClipboardEvent.java userinterface2/GUIClipboardEvent.java
+*** userinterface/GUIClipboardEvent.java	2016-03-04 05:27:42.621000000 +0530
+--- userinterface2/GUIClipboardEvent.java	2016-03-04 05:20:09.000000000 +0530
+***************
+*** 39,45 ****
+      public static final int DELETE = 3;
+      public static final int SELECT_ALL = 4;
+      public static final int UNDO = 5;
+!     public static final int REDO = 6;    
+      
+      static int counter =0;
+      /** Creates a new instance of GUIClipboardEvent */
+--- 39,46 ----
+      public static final int DELETE = 3;
+      public static final int SELECT_ALL = 4;
+      public static final int UNDO = 5;
+!     public static final int REDO = 6;
+!     public static final int HELP = 7;
+      
+      static int counter =0;
+      /** Creates a new instance of GUIClipboardEvent */
+***************
+*** 55,57 ****
+--- 56,59 ----
+          return (GUIPlugin)getData();
+      }
+  }
++ 
+Only in userinterface/: GUIClipboardEvent.java~
+diff -cr userinterface/GUIClipboard.java userinterface2/GUIClipboard.java
+*** userinterface/GUIClipboard.java	2016-03-04 05:27:50.269000000 +0530
+--- userinterface2/GUIClipboard.java	2016-03-04 05:34:51.000000000 +0530
+***************
+*** 59,65 ****
+  	private GUIUndoManager undoManager;
+      private JMenu editMenu;
+      private JToolBar editToolBar;
+!     private Action actionUndo, actionRedo, actionCut, actionCopy, actionPaste, actionDelete, actionSelectAll;
+          
+      /** Creates a new instance of GUIClipboard */
+      public GUIClipboard(GUIPrism pr)
+--- 59,65 ----
+  	private GUIUndoManager undoManager;
+      private JMenu editMenu;
+      private JToolBar editToolBar;
+!     private Action actionUndo, actionRedo, actionCut, actionCopy, actionPaste, actionDelete, actionSelectAll,actionHelp;
+          
+      /** Creates a new instance of GUIClipboard */
+      public GUIClipboard(GUIPrism pr)
+***************
+*** 133,139 ****
+  		actionCut.setEnabled(plugin != null && plugin.canDoClipBoardAction(actionCut));
+  		actionPaste.setEnabled(plugin != null && plugin.canDoClipBoardAction(actionPaste));
+  		actionDelete.setEnabled(plugin != null && plugin.canDoClipBoardAction(actionDelete));
+! 		actionSelectAll.setEnabled(plugin != null && plugin.canDoClipBoardAction(actionSelectAll));		
+  	}
+  
+  	public void takeCLArgs(String args[])
+--- 133,140 ----
+  		actionCut.setEnabled(plugin != null && plugin.canDoClipBoardAction(actionCut));
+  		actionPaste.setEnabled(plugin != null && plugin.canDoClipBoardAction(actionPaste));
+  		actionDelete.setEnabled(plugin != null && plugin.canDoClipBoardAction(actionDelete));
+! 		actionSelectAll.setEnabled(plugin != null && plugin.canDoClipBoardAction(actionSelectAll));	
+! 		actionHelp.setEnabled(plugin!=null && plugin.canDoClipBoardAction(actionHelp));
+  	}
+  
+  	public void takeCLArgs(String args[])
+***************
+*** 202,207 ****
+--- 203,210 ----
+              editMenu.add(new JMenuItem(actionDelete));
+              editMenu.add(new JSeparator());
+              editMenu.add(new JMenuItem(actionSelectAll));
++             editMenu.add(new JSeparator());
++             editMenu.add(new JMenuItem(actionHelp));
+          }
+          
+          editToolBar = new JToolBar();
+***************
+*** 246,253 ****
+--- 249,264 ----
+  	    b5.setToolTipText("Select all");
+  	    b5.setText("");
+  	    editToolBar.add(b5);
++ 	    
++ 	    JButton b8 = new JButton(actionHelp);
++         b8.setToolTipText("Help");
++         b8.setText("");
++         editToolBar.add(b8);
+          }
+          editToolBar.setFloatable(false);
++         
++         
++         
+      }
+      
+      /* Send GUIClipboardEvents to the focussed GUIPlugin */
+***************
+*** 345,351 ****
+          actionSelectAll.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_S));
+          actionSelectAll.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+          actionSelectAll.putValue(Action.NAME, "Select all");
+!         actionSelectAll.putValue(Action.SMALL_ICON, GUIPrism.getIconFromImage("smallSelectAll.png"));     
+      }
+      
+      public OptionsPanel getOptions()
+--- 356,375 ----
+          actionSelectAll.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_S));
+          actionSelectAll.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+          actionSelectAll.putValue(Action.NAME, "Select all");
+!         actionSelectAll.putValue(Action.SMALL_ICON, GUIPrism.getIconFromImage("smallSelectAll.png"));  
+!         
+!         actionHelp = new AbstractAction()
+!         {
+!             public void actionPerformed(ActionEvent e)
+!             {
+!                 notifyEventListeners(new GUIClipboardEvent(GUIClipboardEvent.HELP, getFocussedComponent()));
+!             }
+!         };
+!         actionHelp.putValue(Action.LONG_DESCRIPTION, "Need Help o for PRISM MANUAL");
+!         actionHelp.putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_H));
+!         actionHelp.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+!         actionHelp.putValue(Action.NAME, "Help");
+!         actionHelp.putValue(Action.SMALL_ICON, GUIPrism.getIconFromImage("smallHelp.png"));   
+      }
+      
+      public OptionsPanel getOptions()
+***************
+*** 384,390 ****
+  		return actionSelectAll;
+  	}
+  
+! 	
+  	
+  	
+  	
+--- 408,416 ----
+  		return actionSelectAll;
+  	}
+  
+! 	public Action getHelpAction() {
+! 		return actionHelp;
+! 	}
+  	
+  	
+  	
+***************
+*** 392,394 ****
+--- 418,421 ----
+      
+      
+  }
++ 
+Only in userinterface/: GUIClipboard.java~
+diff -cr userinterface/model/graphicModel/GUIGraphicModelEditor.java userinterface2/model/graphicModel/GUIGraphicModelEditor.java
+*** userinterface/model/graphicModel/GUIGraphicModelEditor.java	2010-11-20 00:15:24.000000000 +0530
+--- userinterface2/model/graphicModel/GUIGraphicModelEditor.java	2016-03-04 06:10:26.000000000 +0530
+***************
+*** 134,140 ****
+      public void selectAll()
+      {
+      }
+!     
+      public void load(File f) throws PrismException, IOException, FileNotFoundException
+      {
+      }
+--- 134,142 ----
+      public void selectAll()
+      {
+      }
+!     public void help(){
+!     	
+!     }
+      public void load(File f) throws PrismException, IOException, FileNotFoundException
+      {
+      }
+diff -cr userinterface/model/GUIModelEditor.java userinterface2/model/GUIModelEditor.java
+*** userinterface/model/GUIModelEditor.java	2012-02-11 04:14:03.000000000 +0530
+--- userinterface2/model/GUIModelEditor.java	2016-03-04 05:46:44.000000000 +0530
+***************
+*** 53,58 ****
+--- 53,60 ----
+      
+      public abstract void selectAll();
+      
++     public abstract void help();
++     
+      public void modelParseFailed(PrismLangException parserError, boolean background) {}
+  
+      public void modelParseSuccessful() {}
+diff -cr userinterface/model/GUIMultiModelHandler.java userinterface2/model/GUIMultiModelHandler.java
+*** userinterface/model/GUIMultiModelHandler.java	2013-11-12 02:30:24.000000000 +0530
+--- userinterface2/model/GUIMultiModelHandler.java	2016-03-05 03:31:41.000000000 +0530
+***************
+*** 29,40 ****
+  
+  import java.awt.BorderLayout;
+  import java.awt.Color;
+  import java.awt.Font;
+  import java.awt.GridLayout;
+  import java.io.File;
+  import java.io.FileWriter;
+  import java.io.IOException;
+! 
+  import javax.swing.Action;
+  import javax.swing.JLabel;
+  import javax.swing.JPanel;
+--- 29,41 ----
+  
+  import java.awt.BorderLayout;
+  import java.awt.Color;
++ import java.awt.Desktop;
+  import java.awt.Font;
+  import java.awt.GridLayout;
+  import java.io.File;
+  import java.io.FileWriter;
+  import java.io.IOException;
+! import java.net.*;
+  import javax.swing.Action;
+  import javax.swing.JLabel;
+  import javax.swing.JPanel;
+***************
+*** 79,85 ****
+  	public static final int PRISM_MODE = 1;
+  	public static final int PEPA_MODE = 2;
+  
+! 	// export entity types
+  	public static final int TRANS_EXPORT = 1;
+  	public static final int STATE_REWARDS_EXPORT = 2;
+  	public static final int TRANS_REWARDS_EXPORT = 3;
+--- 80,86 ----
+  	public static final int PRISM_MODE = 1;
+  	public static final int PEPA_MODE = 2;
+  
+! 	// export entity typesd
+  	public static final int TRANS_EXPORT = 1;
+  	public static final int STATE_REWARDS_EXPORT = 2;
+  	public static final int TRANS_REWARDS_EXPORT = 3;
+***************
+*** 1088,1094 ****
+  	{
+  		editor.selectAll();
+  	}
+! 
+  	//Access methods
+  
+  	public synchronized int getModelMode()
+--- 1089,1120 ----
+  	{
+  		editor.selectAll();
+  	}
+! 	public void help(){
+! 		
+! 		try{
+! 		URL url=new URL("http://www.prismmodelchecker.org/manual/ThePRISMLanguage/PRISMModelFiles");
+! 		
+! 		    try {
+! 		        openPrismManual(url.toURI());
+! 		    } catch (URISyntaxException e) {
+! 		        e.printStackTrace();
+! 		    }
+! 		}catch(IOException e)
+! 	      {
+! 	         e.printStackTrace();
+! 	      }
+! 		
+! 	}
+! 	public static void openPrismManual(URI uri) {
+! 	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+! 	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+! 	        try {
+! 	            desktop.browse(uri);
+! 	        } catch (Exception e) {
+! 	            e.printStackTrace();
+! 	        }
+! 	    }
+! 	}
+  	//Access methods
+  
+  	public synchronized int getModelMode()
+diff -cr userinterface/model/GUIMultiModel.java userinterface2/model/GUIMultiModel.java
+*** userinterface/model/GUIMultiModel.java	2013-11-12 02:30:24.000000000 +0530
+--- userinterface2/model/GUIMultiModel.java	2016-03-04 05:54:39.000000000 +0530
+***************
+*** 1061,1066 ****
+--- 1061,1068 ----
+  					handler.undo();
+  				else if (id == GUIClipboardEvent.REDO)
+  					handler.redo();
++ 				else if( id == GUIClipboardEvent.HELP)
++ 					handler.help();
+  
+  			}
+  		} else if (e instanceof GUIComputationEvent) {
+diff -cr userinterface/model/GUITextModelEditor.java userinterface2/model/GUITextModelEditor.java
+*** userinterface/model/GUITextModelEditor.java	2013-11-12 02:30:24.000000000 +0530
+--- userinterface2/model/GUITextModelEditor.java	2016-03-05 03:16:53.000000000 +0530
+***************
+*** 225,230 ****
+--- 225,231 ----
+  	    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "prism_selectall");
+  	    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "prism_delete");
+  	    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "prism_cut");
++ 	    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "prism_help");
+  	    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_MASK), "prism_redo");
+  	    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "prism_paste");
+  	    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_E, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "prism_jumperr");
+***************
+*** 237,242 ****
+--- 238,244 ----
+  		actionMap.put("prism_copy", GUIPrism.getClipboardPlugin().getCopyAction());
+  		actionMap.put("prism_paste", GUIPrism.getClipboardPlugin().getPasteAction());
+  		actionMap.put("prism_delete", GUIPrism.getClipboardPlugin().getDeleteAction());
++ 		actionMap.put("prism_help", GUIPrism.getClipboardPlugin().getHelpAction());
+  		actionMap.put("prism_jumperr", actionJumpToError);
+  		
+  		// Attempt to programmatically allow all accelerators
+***************
+*** 450,455 ****
+--- 452,458 ----
+  		contextPopup.add(new JSeparator());
+  		contextPopup.add(GUIPrism.getClipboardPlugin().getSelectAllAction());
+  		contextPopup.add(new JSeparator());
++ 		contextPopup.add(GUIPrism.getClipboardPlugin().getHelpAction());
+  		// Model menu stuff
+  		contextPopup.add(((GUIMultiModel)handler.getGUIPlugin()).getParseModel());
+  		contextPopup.add(((GUIMultiModel)handler.getGUIPlugin()).getBuildModel());
+***************
+*** 633,639 ****
+  	{
+  		editor.selectAll();
+  	}
+! 	
+  	public boolean isEditable()
+  	{
+  		return editor.isEditable();
+--- 636,645 ----
+  	{
+  		editor.selectAll();
+  	}
+! 	public void help()
+! 	{
+! 		
+! 	}
+  	public boolean isEditable()
+  	{
+  		return editor.isEditable();
+***************
+*** 817,823 ****
+  		{
+  			return (editor.getSelectedText() != null);
+  		}
+! 		else if (action == GUIPrism.getClipboardPlugin().getSelectAllAction())
+  		{
+  			return true;
+  		}
+--- 823,829 ----
+  		{
+  			return (editor.getSelectedText() != null);
+  		}
+! 		else if (action == GUIPrism.getClipboardPlugin().getSelectAllAction() || action == GUIPrism.getClipboardPlugin().getHelpAction())
+  		{
+  			return true;
+  		}
+diff -cr userinterface/model/pepaModel/GUIPepaModelEditor.java userinterface2/model/pepaModel/GUIPepaModelEditor.java
+*** userinterface/model/pepaModel/GUIPepaModelEditor.java	2011-07-19 21:59:16.000000000 +0530
+--- userinterface2/model/pepaModel/GUIPepaModelEditor.java	2016-03-05 03:11:55.000000000 +0530
+***************
+*** 157,162 ****
+--- 157,165 ----
+  		editor.selectAll();
+  	}
+  	
++ 	public void help(){
++ 		
++ 	}
+  	public boolean isEditable()
+  	{
+  		return editor.isEditable();
+diff -cr userinterface/properties/GUIMultiProperties.java userinterface2/properties/GUIMultiProperties.java
+*** userinterface/properties/GUIMultiProperties.java	2014-12-07 06:49:23.000000000 +0530
+--- userinterface2/properties/GUIMultiProperties.java	2016-03-05 03:48:43.000000000 +0530
+***************
+*** 33,38 ****
+--- 33,39 ----
+  
+  import java.awt.BorderLayout;
+  import java.awt.Color;
++ import java.awt.Desktop;
+  import java.awt.Dimension;
+  import java.awt.Font;
+  import java.awt.GridLayout;
+***************
+*** 53,58 ****
+--- 54,62 ----
+  import java.io.FileWriter;
+  import java.io.IOException;
+  import java.io.PrintWriter;
++ import java.net.URI;
++ import java.net.URISyntaxException;
++ import java.net.URL;
+  import java.util.ArrayList;
+  import java.util.List;
+  import java.util.Comparator;
+***************
+*** 1054,1060 ****
+  	{
+  		propList.selectAll();
+  	}
+! 
+  	public void a_addConstant()
+  	{
+  		consTable.addNewConstant();
+--- 1058,1090 ----
+  	{
+  		propList.selectAll();
+  	}
+! 	
+! public void a_help(){
+! 		
+! 		try{
+! 		URL url=new URL("http://www.prismmodelchecker.org/manual/PropertySpecification/AllOnOnePage");
+! 		
+! 		    try {
+! 		        openPrismManual(url.toURI());
+! 		    } catch (URISyntaxException e) {
+! 		        e.printStackTrace();
+! 		    }
+! 		}catch(IOException e)
+! 	      {
+! 	         e.printStackTrace();
+! 	      }
+! 		
+! 	}
+! 	public static void openPrismManual(URI uri) {
+! 	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+! 	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+! 	        try {
+! 	            desktop.browse(uri);
+! 	        } catch (Exception e) {
+! 	            e.printStackTrace();
+! 	        }
+! 	    }
+! 	}
+  	public void a_addConstant()
+  	{
+  		consTable.addNewConstant();
+***************
+*** 1328,1333 ****
+--- 1358,1365 ----
+  						a_delete();
+  					} else if (ce.getID() == GUIClipboardEvent.SELECT_ALL) {
+  						a_selectAll();
++ 					} else if (ce.getID() == GUIClipboardEvent.HELP){
++ 						a_help();
+  					}
+  				}
+  			} else {
+***************
+*** 1486,1492 ****
+  			return (propList.getSelectedProperties().size() > 0);
+  		} else if (action == GUIPrism.getClipboardPlugin().getCopyAction()) {
+  			return (propList.getSelectedProperties().size() > 0);
+! 		} else if (action == GUIPrism.getClipboardPlugin().getSelectAllAction()) {
+  			return true;
+  		}
+  
+--- 1518,1524 ----
+  			return (propList.getSelectedProperties().size() > 0);
+  		} else if (action == GUIPrism.getClipboardPlugin().getCopyAction()) {
+  			return (propList.getSelectedProperties().size() > 0);
+! 		} else if (action == GUIPrism.getClipboardPlugin().getSelectAllAction()||action == GUIPrism.getClipboardPlugin().getHelpAction()) {
+  			return true;
+  		}
+  
+***************
+*** 1820,1826 ****
+  		propertiesPopup.add(GUIPrism.getClipboardPlugin().getDeleteAction());
+  		propertiesPopup.add(new JSeparator());
+  		propertiesPopup.add(GUIPrism.getClipboardPlugin().getSelectAllAction());
+! 
+  		constantsPopup = new JPopupMenu();
+  
+  		constantsPopup.add(newConstant);
+--- 1852,1859 ----
+  		propertiesPopup.add(GUIPrism.getClipboardPlugin().getDeleteAction());
+  		propertiesPopup.add(new JSeparator());
+  		propertiesPopup.add(GUIPrism.getClipboardPlugin().getSelectAllAction());
+! 		propertiesPopup.add(new JSeparator());
+! 		propertiesPopup.add(GUIPrism.getClipboardPlugin().getHelpAction());
+  		constantsPopup = new JPopupMenu();
+  
+  		constantsPopup.add(newConstant);
+diff -cr userinterface/properties/GUIPropertiesList.java userinterface2/properties/GUIPropertiesList.java
+*** userinterface/properties/GUIPropertiesList.java	2012-01-28 04:47:13.000000000 +0530
+--- userinterface2/properties/GUIPropertiesList.java	2016-03-05 03:44:20.000000000 +0530
+***************
+*** 482,487 ****
+--- 482,489 ----
+  				parent.a_delete();
+  			} else if (e.getKeyCode() == KeyEvent.VK_A) {
+  				parent.a_selectAll();
++ 			} else if (e.getKeyCode() == KeyEvent.VK_F) {
++ 				parent.a_help();
+  			}
+  		}
+  		if (e.getKeyCode() == KeyEvent.VK_DELETE) {
